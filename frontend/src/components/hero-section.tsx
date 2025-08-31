@@ -90,6 +90,7 @@ export function HeroSection() {
             <Button
               size="lg"
               className="group relative overflow-hidden bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-semibold rounded-xl"
+              onClick={() => window.location.href = '/agent/choice'}
             >
               Get Started Free
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />

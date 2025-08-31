@@ -4,9 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { FaUtensils } from 'react-icons/fa';
 import { ChevronLeft } from 'lucide-react';
-import { themeColors } from "@/app/providers";
-import Footer from '@/app/components/Footer';
-import { AddressAutocomplete } from '@/components/AddressAutocomplete';
+import { Button } from '@/components/ui/button';
 
 interface OrderDetails {
   address: string;
@@ -53,7 +51,7 @@ export default function FoodDeliveryPage() {
   };
 
   const handleBack = () => {
-    router.push('/agent/choice');
+    router.push('/agent/deposit');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,46 +98,33 @@ export default function FoodDeliveryPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: themeColors.background }}>
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="p-2 rounded-full hover:bg-opacity-10 transition-colors"
-            style={{ 
-              color: themeColors.text,
-              backgroundColor: themeColors.text + '10'
-            }}
+            className="p-2 rounded-full hover:bg-accent transition-colors text-foreground"
             aria-label="Go back"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-center" style={{ color: themeColors.text }}>
-            Interact
-            <img
-              src="https://i.imgur.com/ZjRjDD6.png"
-              alt="icon"
-              className="inline-block w-18 h-18 ml-3 mb-3"
-            />
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-center text-foreground">
+            <b>Ace</b>Pay
+            <span className="text-primary">.</span>
           </h1>
           <div className="w-10" /> {/* Spacer to balance the back button */}
         </div>
 
         {/* Content */}
         <div className="max-w-2xl mx-auto">
-          <Card className="w-full" style={{ backgroundColor: themeColors.background === '#F8F8F8' ? '#FFFFFF' : '#1A1A1A' }}>
+          <Card className="w-full bg-card">
             <CardHeader>
               <div className="flex items-center gap-2">
-                <div 
-                  className="p-2 rounded-full"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.secondary} 100%)`
-                  }}
-                >
-                  <FaUtensils className="w-5 h-5" style={{ color: '#FFFFFF' }} />
+                <div className="p-2 rounded-full bg-gradient-to-br from-primary to-primary/60">
+                  <FaUtensils className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <CardTitle className="text-2xl" style={{ color: themeColors.text }}>Food Delivery</CardTitle>
+                <CardTitle className="text-2xl text-foreground">Food Delivery</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -148,22 +133,26 @@ export default function FoodDeliveryPage() {
                   <div>
                     <label 
                       htmlFor="address" 
-                      className="block text-sm font-medium mb-1"
-                      style={{ color: themeColors.text }}
+                      className="block text-sm font-medium mb-1 text-foreground"
                     >
                       Delivery Address
                     </label>
-                    <AddressAutocomplete
-                      onSelect={handleAddressSelect}
-                      placeholder="Search for your delivery address"
+                    <input
+                      type="text"
+                      id="address"
+                      name="address"
+                      value={orderDetails.address}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background border border-border text-foreground"
+                      placeholder="Enter your delivery address"
+                      required
                     />
                   </div>
 
                   <div>
                     <label 
                       htmlFor="restaurantName" 
-                      className="block text-sm font-medium mb-1"
-                      style={{ color: themeColors.text }}
+                      className="block text-sm font-medium mb-1 text-foreground"
                     >
                       Restaurant Name
                     </label>
@@ -173,13 +162,7 @@ export default function FoodDeliveryPage() {
                       name="restaurantName"
                       value={orderDetails.restaurantName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2"
-                      style={{
-                        backgroundColor: themeColors.background === '#F8F8F8' ? '#F0F0F0' : '#2A2A2A',
-                        color: themeColors.text,
-                        borderColor: themeColors.text + '20',
-                        borderWidth: '1px'
-                      }}
+                      className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background border border-border text-foreground"
                       placeholder="Enter restaurant name"
                       required
                     />
@@ -188,8 +171,7 @@ export default function FoodDeliveryPage() {
                   <div>
                     <label 
                       htmlFor="item" 
-                      className="block text-sm font-medium mb-1"
-                      style={{ color: themeColors.text }}
+                      className="block text-sm font-medium mb-1 text-foreground"
                     >
                       Item to Order
                     </label>
@@ -199,37 +181,25 @@ export default function FoodDeliveryPage() {
                       name="item"
                       value={orderDetails.item}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2"
-                      style={{
-                        backgroundColor: themeColors.background === '#F8F8F8' ? '#F0F0F0' : '#2A2A2A',
-                        color: themeColors.text,
-                        borderColor: themeColors.text + '20',
-                        borderWidth: '1px'
-                      }}
+                      className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background border border-border text-foreground"
                       placeholder="Enter item name"
                       required
                     />
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 rounded-lg transition-all hover:scale-[1.02] disabled:opacity-70"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.secondary} 100%)`,
-                    color: 'white'
-                  }}
+                  className="w-full py-3 rounded-lg transition-all hover:scale-[1.02] disabled:opacity-70 bg-primary hover:bg-primary/90"
                 >
                   {isLoading ? 'Processing...' : 'Send to Agent'}
-                </button>
+                </Button>
               </form>
             </CardContent>
           </Card>
         </div>
 
-        {/* Footer */}
-        <Footer />
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ const ESCROW_ABI = [
 ];
 
 async function main() {
-  console.log("🤖 Agent Completing Task with Custom Private Key (INTERACT System)");
+  console.log("🤖 Agent Completing Task with Custom Private Key (acepay System)");
   console.log(`📋 Task ID: ${TASK_ID}`);
   
   // Get network info

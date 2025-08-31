@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { useTheme } from '@/app/providers';
 
 const FTSO_MAINNET = "0x7BDE3Df0624114eDB3A67dFe6753e62f4e7c1d20";
 const FTSO_TESTNET = "0x3d893C53D9e8056135C26C8c638B76C8b60Df726";
@@ -18,25 +17,17 @@ interface PriceData {
 }
 
 export function PriceFeed() {
-  const { theme, themeColors } = useTheme();
   const [priceData, setPriceData] = useState<PriceData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const getFeedId = () => {
-    switch (theme) {
-      case 'hedera':
-        return { feedId: HBAR_USD, symbol: 'HBAR', name: 'Hedera' };
-      case 'flare':
-        return { feedId: FLR_USD, symbol: 'FLR', name: 'Flare' };
-      default:
-        return null;
-    }
-  };
+  const getFeedConfig = () => ({
+    feedId: FLR_USD,
+    symbol: 'FLR',
+    name: 'Flare'
+  });
 
   const fetchPrice = async () => {
-    const feedConfig = getFeedId();
-    if (!feedConfig) return;
-
+    const feedConfig = getFeedConfig();
     setIsLoading(true);
     try {
       const provider = new ethers.JsonRpcProvider("https://flare-api.flare.network/ext/C/rpc");
@@ -67,59 +58,38 @@ export function PriceFeed() {
   };
 
   useEffect(() => {
-    const feedConfig = getFeedId();
-    if (!feedConfig) {
-      setPriceData(null);
-      return;
-    }
-
     fetchPrice();
     
     // Update price every 30 seconds
     const interval = setInterval(fetchPrice, 30000);
     return () => clearInterval(interval);
-  }, [theme]);
+  }, []);
 
-  // Don't show price feed for Flow theme
-  if (theme === 'flow' || !getFeedId()) {
-    return null;
-  }
-
-  const feedConfig = getFeedId()!;
+  const feedConfig = getFeedConfig();
 
   return (
-    <div 
-      className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
-      style={{
-        backgroundColor: themeColors.background === '#F8F8F8' ? '#FFFFFF' : '#1A1A1A',
-        borderColor: themeColors.primary + '40',
-        color: themeColors.text
-      }}
-    >
+    <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm bg-background/50 backdrop-blur-sm border-primary/20">
       <div className="flex items-center gap-1">
-        <div 
-          className="w-2 h-2 rounded-full" 
-          style={{ backgroundColor: themeColors.primary }}
-        />
+        <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
         <span className="font-medium">{feedConfig.symbol}/USD</span>
       </div>
       
       {isLoading ? (
-        <span className="animate-pulse">Loading...</span>
+        <span className="animate-pulse text-muted-foreground">Loading...</span>
       ) : priceData?.error ? (
         <span className="text-red-500 text-xs">{priceData.error}</span>
       ) : (
         <div className="flex items-center gap-2">
-          <span className="font-mono font-bold" style={{ color: themeColors.primary }}>
+          <span className="font-mono font-bold text-primary">
             ${priceData?.price}
           </span>
-          <span className="text-xs opacity-60">
+          <span className="text-xs text-muted-foreground">
             {priceData?.lastUpdated && new Date(priceData.lastUpdated * 1000).toLocaleTimeString()}
           </span>
         </div>
       )}
       
-      <span className="text-xs opacity-40">FTSO</span>
+      <span className="text-xs text-muted-foreground/60">FTSO</span>
     </div>
   );
 } 

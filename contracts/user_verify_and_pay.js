@@ -14,7 +14,7 @@ const ESCROW_ABI = [
 ];
 
 async function main() {
-  console.log("👤 User Verifying and Paying Agent (INTERACT System)");
+  console.log("👤 User Verifying and Paying Agent (acepay System)");
   console.log(`📋 Task ID: ${TASK_ID}`);
   
   // Get network info
@@ -115,7 +115,7 @@ async function main() {
       console.log(`   https://evm.flowscan.io/tx/${tx.hash}`);
     }
     
-    console.log(`\n🎉 INTERACT Task Workflow Complete!`);
+    console.log(`\n🎉 acepay Task Workflow Complete!`);
     console.log(`   ✅ Task created by user`);
     console.log(`   ✅ Task completed by agent: ${taskAfter.agent}`);
     console.log(`   ✅ Payment verified and sent: ${ethers.utils.formatEther(taskAfter.amount)} ${tokenName}`);
