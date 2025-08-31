@@ -1,80 +1,116 @@
-# 🏗 Scaffold-ETH 2
+# ACEPAY
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+Empower anyone to receive and transfer funds, instantly & without fees.
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+UX is well known to be one of the subject that need a lot of improvements in Web3 - there's just too much terms and concepts to understand for your mother to start using a web3 app.
 
-⚙️ Built using NextJS, RainbowKit, Foundry, Wagmi, Viem, and Typescript.
+acepay (from the latin solvere, to settle / pay / solve) aims to be a user friendly replacement to a quick payment app like Venmo or PayPal, using crypto under the hood without you even knowing it. Create an account with your email or social login with Google/Apple etc, choose a username and you are ready to go! Top up your account with a credit card and send money to your friends & family in a few clicks without ever seeing a transaction signature modal or seeing the words "gas fees". If you are already a degen, you can of course login with your favorite wallet, top up your account with crypto on EVM chains, and take full control of your underlying wallet at any time (which acepay never has access to).
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+acepay is a Real World payment app, for Real World users.
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+## ⚙️ Installation
 
-## Requirements
+To run the project locally, simply clone the repository and follow these steps
 
-Before you begin, you need to install the following tools:
+### Contracts
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+The following contract addresses are the ones of the deployed version on Polygon mainnet, feel free to use them or to redeploy the contracts (all located in [the contracts folder](./contracts/)).
+- ENS L2Registry: [`0xba9f0059500df81eb4ab8ccd16fd3df379ba7c57`](https://polygonscan.com/address/0xba9f0059500df81eb4ab8ccd16fd3df379ba7c57)
+- ENS L2Registrar: [`0xbd806fDB39a7c23a4343376ABA7DbA890b14a106`](https://polygonscan.com/address/0xbd806fDB39a7c23a4343376ABA7DbA890b14a106)
+- PaymentContract: [`0x58B073955759Ca04b0d574cB432835B2B304DCd2`](https://polygonscan.com/address/0x58B073955759Ca04b0d574cB432835B2B304DCd2)
 
-## Quickstart
+### Frontend
 
-To get started with Scaffold-ETH 2, follow the steps below:
+Duplicate the `.env.example` file into `.env` and fill the required variables:
+```sh
+# ThirdWeb setup
+VITE_THIRDWEB_CLIENT_ID=
 
-1. Install dependencies if it was skipped in CLI:
+# URL where you will deploy the backend, this is the default
+VITE_BACKEND_API_URL=http://localhost:8000
 
-```
-cd my-dapp-example
-yarn install
-```
-
-2. Run a local network in the first terminal:
+# The deployed version of the payment contract
+VITE_PAYMENT_CONTRACT_ADDRESS=0x58B073955759Ca04b0d574cB432835B2B304DCd2
 
 ```
-yarn chain
+
+Then you just need to install the dependencies and start the project:
+```sh
+npm install
+npm run dev
 ```
 
-This command starts a local Ethereum network using Foundry. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/foundry/foundry.toml`.
+### Backend
 
-3. On a second terminal, deploy the test contract:
+Again, duplicate the `.env.example` file into `.env` and fill the required variables.
 
+For Curvegrid, you need to [create a deployment](https://docs.curvegrid.com/multibaas/getting-started/account-and-deployment/) on Polygon mainnet.\
+You can then create an API key, a Cloud Wallet (to get the HSM address), and add the ENS contracts to your library. Finally, create a webhook to the `/curvegrid/internal-webhook` route of your backend and add the secret in the end.
+
+The other variables are self-explanatory and default values are generally fine.\
+There's only a Pinata account & API key to create, and a Thirdweb webhook for topups detection to setup (that should go to the `/thirdweb/webhook` route).
+```sh
+# -- Curvegrid --
+CURVEGRID_API_KEY=
+CURVEGRID_DEPLOYMENT_URL=
+CURVEGRID_HSM_ADDRESS=
+CURVEGRID_ENS_REGISTRAR_CONTRACT_LABEL=l2registrar
+CURVEGRID_ENS_REGISTRAR_CONTRACT_ADDRESS_ALIAS=l2registrar1
+CURVEGRID_ENS_REGISTRY_CONTRACT_LABEL=l2registry
+CURVEGRID_ENS_REGISTRY_CONTRACT_ADDRESS_ALIAS=l2registry1
+CURVEGRID_WEBHOOK_SECRET=
+
+# -- Logging --
+LOG_LEVEL=INFO
+LOG_FILE=
+
+# -- Database --
+POSTGRES_DB=acepay
+POSTGRES_USER=acepay
+POSTGRES_PASSWORD=
+POSTGRES_HOST=localhost:5432
+DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB
+
+# -- Authentication --
+JWT_SECRET=  # Generate a secure random key using: python -c "import secrets; print(secrets.token_hex(32))"
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES="43200" # 30 days
+
+# -- Miscellaneous --
+IS_DEVELOPMENT=False
+PINATA_JWT=
+THIRDWEB_WEBHOOK_SECRET=
 ```
-yarn deploy
+
+Install the dependencies & launch the FastAPI backend:
+```sh
+python -m venv venv
+source venv/bin/activate
+poetry install
+python -m uvicorn src.main:app --reload
 ```
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/foundry/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/foundry/script` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
-yarn start
+You also need to start the PostgreSQL database with the following script:
+```sh
+./scripts/dev.sh
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+To launch the API and database in production, simply run `docker compose up -d` (don't forget to update the `POSTGRES_HOST` environment variable to use the service name aka `postgres` by default).
 
-Run smart contract test with `yarn foundry:test`
+## 🚀 Getting started
 
-- Edit your smart contracts in `packages/foundry/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/foundry/script`
+To use acepay, you can either follow the steps above to launch your own version of the app or use the [deployed version](#).
 
+> 💡 acepay is also available as a PWA that you can add to your home screen if you are a mobile user
 
-## Documentation
+## 📈 Current caveats and future improvements
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+As a hackathon project built in solo, this is obviously not finished and can be improved in many ways. Some examples and ideas I'd like to explore are listed below
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+- 📈 UI / UX improvements
+  - Detect transactions made without the PaymentContract (especially top-ups) and show them in the app
+  - Recurring transactions (could also lead to subscriptions)
+  - Transaction history filtering & detailed view
+- 🏎️ Multi-chain transactions (by leveraging [1inch Fusion](https://1inch.dev/fusion-plus-api/) or [Circle's CCTP](https://developers.circle.com/stablecoins/cctp-getting-started) for example, both not yet on Polygon unfortunately)
+- ⚙️ Enterprise features with dashboards to track revenues, APIs / webhooks, off-ramp solutions...
+- 🧠 Various codebase improvements & refactoring, some parts (especially the UI were generated with AI tools and are far from perfect)
 
-## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
