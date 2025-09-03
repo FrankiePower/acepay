@@ -36,10 +36,14 @@ export default function DepositPage() {
   const router = useRouter();
   const [amount, setAmount] = useState('0.1');
   const [isLoading, setIsLoading] = useState(false);
-  const { open } = useWeb3Modal();
-  const { address, isConnected, chain } = useAccount();
-  const { disconnect } = useDisconnect();
-  const { switchChain } = useSwitchChain();
+
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => setIsClient(true), []);
+
+  const { open } = isClient ? useWeb3Modal() : ({ open: () => {} } as any);
+  const { address, isConnected, chain } = isClient ? useAccount() : ({ address: undefined, isConnected: false, chain: undefined } as any);
+  const { disconnect } = isClient ? useDisconnect() : ({ disconnect: () => {} } as any);
+  const { switchChain } = isClient ? useSwitchChain() : ({ switchChain: async () => {} } as any);
 
   const FLARE_CHAIN_ID = 114;
   const ESCROW_CONTRACT = '0x698AeD7013796240EE7632Bde5f67A7f2A2aA6A5'; // You may need to deploy to Coston2
@@ -93,7 +97,7 @@ export default function DepositPage() {
     try {
       setIsLoading(true);
       
-      const selectedService = localStorage.getItem('selectedServiceTitle') || 'Food Delivery';
+      const selectedService = isClient ? (localStorage.getItem('selectedServiceTitle') || 'Food Delivery') : 'Food Delivery';
       
       writeContract({
         address: ESCROW_CONTRACT as `0x${string}`,
@@ -130,7 +134,7 @@ export default function DepositPage() {
 
   const handleBack = () => router.push('/agent/choice');
   const handleNext = () => {
-    const selectedService = localStorage.getItem('selectedService');
+    const selectedService = isClient ? localStorage.getItem('selectedService') : null;
     if (selectedService) {
       router.push(`/services/${selectedService}`);
     }
