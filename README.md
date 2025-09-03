@@ -31,7 +31,3 @@ cd backend
 pip install -r requirements.txt
 python main.py
 ```
-
-## Contract
-
-Deployed on Flare Mainnet: `0x698AeD7013796240EE7632Bde5f67A7f2A2aA6A5`
